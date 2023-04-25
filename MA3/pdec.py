@@ -24,27 +24,27 @@ def main():
 
     output_file = sys.argv[4]
 
-    plaintext_blocks = padded_decryption(input_data_bits, initial_vector, key)
-    plaintext = mergeBlocks(plaintext_blocks)
+    plaintext = padded_decryption(input_data_bits, initial_vector, key)
     write_file(output_file, bits_to_bytes(plaintext))
 
     sample_plaintext = bytes_to_bits(read_file("pad_in"))
 
-    # Need to convert to sets to be able to compare the content of lists.
-    print(set(plaintext) == set(sample_plaintext))
+    print(plaintext == sample_plaintext)
 
 def padded_decryption(input_bits: list, initial_vector: list, key: list) -> list:
-    input_length: int = len(input_bits)
-
-    if input_length % 16 == 0:  # No padding is needed, but we append to bytes of value 16 each.
-        padding_bytes = [0, 0, 0, 1, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0]
-    else:  # one byte is needed to be padded, 1 byte of value 1.
-        padding_bytes = [0, 0, 0, 0, 0, 0, 0, 1]  # 8 bits = 1 byte.
-
-    input_bits.extend(padding_bytes)
     input_blocks = splitIntoBlocks(input_bits, 16)
+    plaintext = cbc_dec(input_blocks, initial_vector, key)
+    plaintext = mergeBlocks(plaintext)
 
-    return cbc_dec(input_blocks, initial_vector, key)
+    # The thing about decrypting in regard to padding, is that when we padded with bytes of certain value during
+    # encryption, we need to check the values of the last bytes to see if we either padded with 2 bytes or 1 byte.
+    # We can then know how many bytes to remove from the decrypted material.
+    if plaintext[-16:] == [0, 0, 0, 1, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0]:  # split into two lists to make it easier to read the byte values.
+        plaintext = plaintext[:len(plaintext)-16] # 2 bytes = 16 bits
+    elif plaintext[-8:] == [0, 0, 0, 0, 0, 0, 0, 1]:  # one byte from padding is removed. 1 byte = 8 bits
+        plaintext = plaintext[:len(plaintext)-8]
+
+    return plaintext
 
 
 if __name__=="__main__":

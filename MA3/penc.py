@@ -33,9 +33,8 @@ def main():
     ciphertext = mergeBlocks(ciphertext_blocks)
     write_file(output_file, bits_to_bytes(ciphertext))
 
-    # Just a test to see if encryption is correct
-    # Need to convert to sets to be able to compare the content of lists.
-    print(set(ciphertext)==set(sample_ciphertext))
+    # Just a test to see if encryption is correct.
+    print(ciphertext==sample_ciphertext)
 
 # The one thing I only need to think about is the padding part and how to solve that. The CBC encryption from CBC.py
 # should do the rest.
