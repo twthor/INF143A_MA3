@@ -5,7 +5,7 @@ import sys
 # If no padding is required => two bytes will be added with value 16.
 # Everything else => P bytes of value P.
 # Should include some sort of indicator as to how many bytes that was padded in encryption/decryption.
-# Running the program in CLI like this: python penc plaintext key iv output file.
+# Running the program in CLI like this: python penc.py plaintext key iv output file.
 
 """ Task 2 - Block cipher with padding in CBC mode of operation - encryption part"""
 def main():
@@ -42,7 +42,8 @@ def padded_encryption(input_bits: list, initial_vector: list, key: list) -> list
     input_length: int = len(input_bits)
 
     if input_length % 16 == 0:  # No padding is needed, but we append to bytes of value 16 each.
-        padding_bytes = [0, 0, 0, 1, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0]
+        padding_bytes = [0, 0, 0, 0, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0] # 2 bytes with a total value of 16.
+        # Split in two lists just to illustrate the two different bytes. When concatenated, the value is 16.
     else:  # one byte is needed to be padded, 1 byte of value 1.
         padding_bytes = [0, 0, 0, 0, 0, 0, 0, 1]  # 8 bits = 1 byte.
 
