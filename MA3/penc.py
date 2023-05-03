@@ -44,6 +44,7 @@ def padded_encryption(input_bits: list, initial_vector: list, key: list) -> list
     if input_length % 16 == 0:  # No padding is needed, but we append to bytes of value 16 each.
         padding_bytes = [0, 0, 0, 0, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0] # 2 bytes with a total value of 16.
         # Split in two lists just to illustrate the two different bytes. When concatenated, the value is 16.
+        # " + " will concatenate the two lists.
     else:  # one byte is needed to be padded, 1 byte of value 1.
         padding_bytes = [0, 0, 0, 0, 0, 0, 0, 1]  # 8 bits = 1 byte.
 

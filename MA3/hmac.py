@@ -14,21 +14,21 @@ def compute_hmac(file, key):
     outer_pad = outer_pad_pattern * int(len(key)/len(outer_pad_pattern))
 
     key_xor_innerpad = XOR(key, inner_pad) # S_i
-    new_message = key_xor_innerpad + file # concatenated before hashing
+    key_innerpad_file = key_xor_innerpad + file # concatenated before hashing
 
-    hash_input = b"".join(bits_to_bytes(new_message)) # the sha256 function needs input to be of type bytes.
+    hash_input = b"".join(bits_to_bytes(key_innerpad_file)) # the sha256 function needs input to be of type bytes.
     tmp_hash = sha256(hash_input)
 
     key_xor_outpad = XOR(key, outer_pad) # S_o
     hash_bytes = bytes.fromhex(tmp_hash.hexdigest()) # converts from hexadecimal to bytes
     hash_in_bits = bytes_to_bits(hash_bytes) # converts from list of bytes to bits.
 
-    outerpad_tmphash = key_xor_outpad + hash_in_bits #S_o + tmp_hash
+    outerpad_tmphash = key_xor_outpad + hash_in_bits # S_o + tmp_hash
 
     second_hash_input = b"".join(bits_to_bytes(outerpad_tmphash)) # joins the list of bytes to a string prepare it
     # as input for the sha256() function as it requires a string of bytes.
 
-    hmac = sha256(second_hash_input)
+    hmac = sha256(second_hash_input) # No IV input needed for Sha256.
     hmac = bytes.fromhex(hmac.hexdigest()) # convert the hash in hexadecimal to bytes
     hmac = bytes_to_bits(hmac) # formatting it, so it works with the write_file() function from cipher.py
     return bits_to_bytes(hmac)
@@ -50,9 +50,9 @@ def main():
     write_file(output_file, hmac)
 
     sample_hmac = read_file("hash_out")
-    # print(sample_hmac, " sample data")
-    hmac_test = b"".join(hmac)
-    # print(hmac_test, " reformatted")
+    # print(sample_hmac, " from sample data")
+    hmac_test = b"".join(hmac) # join the list of bytes to be able to compare the hashes
+    # print(hmac_test, " formatted from list of bytes to byte-string")
     print(hmac_test == sample_hmac)
 
 if __name__ == "__main__":
