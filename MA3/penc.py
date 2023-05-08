@@ -41,14 +41,15 @@ def main():
 def padded_encryption(input_bits: list, initial_vector: list, key: list) -> list:
     input_length: int = len(input_bits)
 
-    if input_length % 16 == 0:  # No padding is needed, but we append to bytes of value 16 each.
-        padding_bytes = [0, 0, 0, 0, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0] # 2 bytes with a total value of 16.
-        # Split in two lists just to illustrate the two different bytes. When concatenated, the value is 16.
+    if input_length % 16 == 0:  # No padding is needed, but we append two bytes of value 16 each.
+        padding_bits = [0, 0, 0, 1, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0] # 2 bytes each with a value of 16.
+        # Split in two lists just to illustrate the two different bytes.
         # " + " will concatenate the two lists.
     else:  # one byte is needed to be padded, 1 byte of value 1.
-        padding_bytes = [0, 0, 0, 0, 0, 0, 0, 1]  # 8 bits = 1 byte.
+        padding_bits = [0, 0, 0, 0, 0, 0, 0, 1]  # 8 bits = 1 byte.
 
-    input_bits.extend(padding_bytes)
+    # I have chosen to do the operations in bits, but in practice it's the same.
+    input_bits.extend(padding_bits)
     input_blocks = splitIntoBlocks(input_bits, 16)
 
     return cbc_enc(input_blocks, initial_vector, key)

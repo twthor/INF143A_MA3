@@ -31,14 +31,14 @@ def main():
     print(plaintext == sample_plaintext)
 
 def padded_decryption(input_bits: list, initial_vector: list, key: list) -> list:
-    input_blocks = splitIntoBlocks(input_bits, 16) # since its encrypted material, we know its divisible by 16.
+    input_blocks = splitIntoBlocks(input_bits, 16) # since its encrypted material, we know it's divisible by 16.
     plaintext = cbc_dec(input_blocks, initial_vector, key)
     plaintext = mergeBlocks(plaintext)
 
     # The thing about decrypting in regard to padding, is that when we padded with bytes of certain value during
     # encryption, we need to check the values of the last bytes to see if we either padded with 2 bytes or 1 byte.
-    # We can then know how many bytes of the padding to remove from the decrypted material.
-    if plaintext[-16:] == [0, 0, 0, 0, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0]:  # split into two lists to make it easier to read the byte values.
+    # We can then know how many bytes to remove from the decrypted material.
+    if plaintext[-16:] == [0, 0, 0, 1, 0, 0, 0, 0] + [0, 0, 0, 1, 0, 0, 0, 0]:  # split into two lists to make it easier to read the byte values.
         # " + " will concatenate the two lists.
         plaintext = plaintext[:len(plaintext)-16] # 2 bytes = 16 bits
     elif plaintext[-8:] == [0, 0, 0, 0, 0, 0, 0, 1]:  # one byte from padding is removed. 1 byte = 8 bits
